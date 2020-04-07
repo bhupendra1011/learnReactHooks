@@ -26,8 +26,11 @@ export default function App() {
   ); // lifting the stateup
   const handleChange = event => {
     setSearchTerm(event.target.value);
-    localStorage.setItem("search", searchTerm); // handler function is creating sideeffect browser api interaction
+    localStorage.setItem("search", searchTerm);
   };
+  React.useEffect(() => {
+    localStorage.setItem("search", searchTerm);
+  }, [searchTerm]);
   const filteredItems = stories.filter(item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
