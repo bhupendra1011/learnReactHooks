@@ -41,6 +41,7 @@ export default function App() {
         id="search"
         type="text"
         value={searchTerm}
+        isFocussed={true}
         OnInputChange={handleChange}
       >
         {" "}
@@ -58,12 +59,26 @@ function InputWithLabel({
   type = "text",
   value,
   OnInputChange,
-  children
+  children,
+  isFocussed
 }) {
+  const inputRef = React.useRef();
+  React.useEffect(() => {
+    if (isFocussed && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocussed]);
+
   return (
     <>
       <label htmlFor="search">{children} </label>
-      <input type={type} id={id} value={value} onChange={OnInputChange} />
+      <input
+        ref={inputRef}
+        type={type}
+        id={id}
+        value={value}
+        onChange={OnInputChange}
+      />
     </>
   );
 }
