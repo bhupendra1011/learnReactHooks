@@ -37,23 +37,24 @@ export default function App() {
     <div className="App">
       <h1>React Basics</h1>
       <h2> React stories</h2>
-      <Search value={searchTerm} change={handleChange} />
+      <InputWithLabel
+        id="search"
+        type="text"
+        label="Search"
+        value={searchTerm}
+        OnInputChange={handleChange}
+      />
       <hr />
       <List list={filteredItems} />
     </div>
   );
 }
 
-function Search(props) {
+function InputWithLabel({ id, label, type = "text", value, OnInputChange }) {
   return (
     <>
-      <label htmlFor="search">Search: </label>
-      <input
-        type="text"
-        id="search"
-        value={props.value}
-        onChange={props.change}
-      />
+      <label htmlFor="search">{label} </label>
+      <input type={type} id={id} value={value} onChange={OnInputChange} />
     </>
   );
 }
