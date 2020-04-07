@@ -25,7 +25,25 @@ export default function App() {
     "searchItem",
     "R"
   );
-  const [stories, setStories] = React.useState([]);
+  // const [stories, setStories] = React.useState([]);
+  // manage state via useReducer instead of useState as addition and removal of stories is there
+
+  const storiesReducer = (state, action) => {
+    switch (action.type) {
+      case "SET_STORIES":
+        return action.payload;
+      case "REMOVE_STORY":
+        return state.filter(
+          story => action.payload.objectID !== story.objectID
+        );
+      default:
+        return state;
+    }
+  };
+
+  const [stories, dispatchStories] = React.useReducer(storiesReducer, []);
+  console.log(dispatchStories);
+
   const [isLoading, setLoading] = React.useState(false);
   const [isError, setIsError] = React.useState(false);
 
@@ -43,17 +61,16 @@ export default function App() {
     setLoading(true);
     getAsyncStories()
       .then(result => {
-        setStories(result.data);
+        dispatchStories({ type: "SET_STORIES", payload: result.data });
         setLoading(false);
       })
       .catch(() => setIsError(true));
   }, []);
 
   const handleRemoveStory = item => {
-    const newStories = stories.filter(
-      story => item.objectID !== story.objectID
-    );
-    setStories(newStories);
+    dispatchStories({ type: "REMOVE_STORY", payload: item });
+    //const newStories =
+    //setStories(newStories);
   };
 
   const handleChange = event => {
