@@ -30,22 +30,36 @@ export default function App() {
 
   const storiesReducer = (state, action) => {
     switch (action.type) {
-      case "SET_STORIES":
-        return action.payload;
+      case "STORIES_FETCH_INIT":
+        return { ...state, isLoading: true };
+      case "STORIES_FETCH_SUCCESS":
+        return {
+          ...state,
+          isLoading: false,
+          isError: false,
+          data: action.payload
+        };
+      case "STORIES_FETCH_FAILURE":
+        return { ...state, isLoading: false, isError: true };
       case "REMOVE_STORY":
-        return state.filter(
-          story => action.payload.objectID !== story.objectID
-        );
+        return {
+          ...state,
+          data: state.data.filter(
+            story => action.payload.objectID !== story.objectID
+          )
+        };
       default:
         return state;
     }
   };
 
-  const [stories, dispatchStories] = React.useReducer(storiesReducer, []);
-  console.log(dispatchStories);
+  const [stories, dispatchStories] = React.useReducer(storiesReducer, {
+    data: [],
+    isError: false,
+    isLoading: false
+  });
 
-  const [isLoading, setLoading] = React.useState(false);
-  const [isError, setIsError] = React.useState(false);
+  // 👆 having a unified state object , where data related  data-fetching /loading/error states are combined
 
   //async fetching remote data
   const getAsyncStories = () => {
@@ -58,13 +72,16 @@ export default function App() {
 
   // getting initial data on componnet mount
   React.useEffect(() => {
-    setLoading(true);
+    // setting initial loading state
+    dispatchStories({ type: "STORIES_FETCH_INIT" });
     getAsyncStories()
       .then(result => {
-        dispatchStories({ type: "SET_STORIES", payload: result.data });
-        setLoading(false);
+        dispatchStories({
+          type: "STORIES_FETCH_SUCCESS",
+          payload: result.data
+        });
       })
-      .catch(() => setIsError(true));
+      .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
   }, []);
 
   const handleRemoveStory = item => {
@@ -77,12 +94,12 @@ export default function App() {
     setSearchTerm(event.target.value);
   };
 
-  const filteredItems = stories.filter(item =>
+  const filteredItems = stories.data.filter(item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  if (isError) {
-    return <p> Something went wrong... </p>;
-  }
+  // if (stories.isError) {
+  //   return <p> Something went wrong... </p>;
+  // }
   return (
     <div className="App">
       <h1>React Basics</h1>
@@ -99,7 +116,11 @@ export default function App() {
       </InputWithLabel>
       <hr />
 
-      {isLoading ? (
+      {stories.isError && (
+        <p style={{ color: "red" }}> Some error occured ... </p>
+      )}
+
+      {stories.isLoading ? (
         <p> Loading... </p>
       ) : (
         <List list={filteredItems} onRemoveitem={handleRemoveStory} />
