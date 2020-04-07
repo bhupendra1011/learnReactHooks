@@ -25,7 +25,29 @@ export default function App() {
     "searchItem",
     "R"
   );
-  const [stories, setStories] = React.useState(initialStories);
+  const [stories, setStories] = React.useState([]);
+  const [isLoading, setLoading] = React.useState(false);
+  const [isError, setIsError] = React.useState(false);
+
+  //async fetching remote data
+  const getAsyncStories = () => {
+    const dataPromise = new Promise((resolve, reject) =>
+      setTimeout(() => resolve({ data: initialStories }), 3000)
+    );
+    // const dataPromise = Promise.resolve({ data: initialStories });
+    return dataPromise;
+  };
+
+  // getting initial data on componnet mount
+  React.useEffect(() => {
+    setLoading(true);
+    getAsyncStories()
+      .then(result => {
+        setStories(result.data);
+        setLoading(false);
+      })
+      .catch(() => setIsError(true));
+  }, []);
 
   const handleRemoveStory = item => {
     const newStories = stories.filter(
@@ -41,7 +63,9 @@ export default function App() {
   const filteredItems = stories.filter(item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  if (isError) {
+    return <p> Something went wrong... </p>;
+  }
   return (
     <div className="App">
       <h1>React Basics</h1>
@@ -57,7 +81,12 @@ export default function App() {
         Search :
       </InputWithLabel>
       <hr />
-      <List list={filteredItems} onRemoveitem={handleRemoveStory} />
+
+      {isLoading ? (
+        <p> Loading... </p>
+      ) : (
+        <List list={filteredItems} onRemoveitem={handleRemoveStory} />
+      )}
     </div>
   );
 }
