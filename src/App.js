@@ -40,20 +40,29 @@ export default function App() {
       <InputWithLabel
         id="search"
         type="text"
-        label="Search"
         value={searchTerm}
         OnInputChange={handleChange}
-      />
+      >
+        {" "}
+        Search :
+      </InputWithLabel>
       <hr />
       <List list={filteredItems} />
     </div>
   );
 }
 
-function InputWithLabel({ id, label, type = "text", value, OnInputChange }) {
+function InputWithLabel({
+  id,
+  label,
+  type = "text",
+  value,
+  OnInputChange,
+  children
+}) {
   return (
     <>
-      <label htmlFor="search">{label} </label>
+      <label htmlFor="search">{children} </label>
       <input type={type} id={id} value={value} onChange={OnInputChange} />
     </>
   );
