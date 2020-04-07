@@ -2,7 +2,7 @@ import React from "react";
 import "./styles.css";
 
 export default function App() {
-  const stories = [
+  const initialStories = [
     {
       title: "React",
       url: "https://reactjs.org/",
@@ -25,6 +25,15 @@ export default function App() {
     "searchItem",
     "R"
   );
+  const [stories, setStories] = React.useState(initialStories);
+
+  const handleRemoveStory = item => {
+    const newStories = stories.filter(
+      story => item.objectID !== story.objectID
+    );
+    setStories(newStories);
+  };
+
   const handleChange = event => {
     setSearchTerm(event.target.value);
   };
@@ -48,7 +57,7 @@ export default function App() {
         Search :
       </InputWithLabel>
       <hr />
-      <List list={filteredItems} />
+      <List list={filteredItems} onRemoveitem={handleRemoveStory} />
     </div>
   );
 }
@@ -83,11 +92,13 @@ function InputWithLabel({
   );
 }
 
-function List(props) {
-  return props.list.map(item => <Item key={item.objectID} item={item} />);
+function List({ list, onRemoveitem }) {
+  return list.map(item => (
+    <Item key={item.objectID} item={item} onRemoveitem={onRemoveitem} />
+  ));
 }
 
-function Item({ item }) {
+function Item({ item, onRemoveitem }) {
   return (
     <div key={item.objectID}>
       <span>
@@ -96,6 +107,11 @@ function Item({ item }) {
       <span>{item.author}</span>
       <span>{item.num_comments}</span>
       <span>{item.points}</span>
+      <span>
+        <button type="button" onClick={() => onRemoveitem(item)}>
+          Delete{" "}
+        </button>
+      </span>
     </div>
   );
 }
