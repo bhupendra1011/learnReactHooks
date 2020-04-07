@@ -21,11 +21,16 @@ export default function App() {
     }
   ];
 
-  const [searchTerm, setSearchTerm] = React.useState("eact"); // lifting the stateup
+  const [searchTerm, setSearchTerm] = React.useState(
+    localStorage.getItem("search") || ""
+  ); // lifting the stateup
   const handleChange = event => {
     setSearchTerm(event.target.value);
+    localStorage.setItem("search", searchTerm); // handler function is creating sideeffect browser api interaction
   };
-  const filteredItems = stories.filter(item => item.title.includes(searchTerm));
+  const filteredItems = stories.filter(item =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="App">
@@ -53,7 +58,11 @@ function Search(props) {
 }
 
 function List(props) {
-  return props.list.map(item => (
+  return props.list.map(item => <Item key={item.objectID} item={item} />);
+}
+
+function Item({ item }) {
+  return (
     <div key={item.objectID}>
       <span>
         <a href={item.url}>{item.title} </a>
@@ -62,5 +71,5 @@ function List(props) {
       <span>{item.num_comments}</span>
       <span>{item.points}</span>
     </div>
-  ));
+  );
 }

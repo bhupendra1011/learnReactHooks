@@ -1,7 +1,7 @@
 {
-  "name": "react-fundamentals",
+  "name": "hooks-fundamentals",
   "version": "1.0.0",
-  "description": "explore basics of react with hooks",
+  "description": "",
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
