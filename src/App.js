@@ -21,16 +21,14 @@ export default function App() {
     }
   ];
 
-  const [searchTerm, setSearchTerm] = React.useState(
-    localStorage.getItem("search") || ""
-  ); // lifting the stateup
+  const [searchTerm, setSearchTerm] = useSemiPersitantStorage(
+    "searchItem",
+    "R"
+  );
   const handleChange = event => {
     setSearchTerm(event.target.value);
-    localStorage.setItem("search", searchTerm);
   };
-  React.useEffect(() => {
-    localStorage.setItem("search", searchTerm);
-  }, [searchTerm]);
+
   const filteredItems = stories.filter(item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -76,3 +74,15 @@ function Item({ item }) {
     </div>
   );
 }
+
+// cutom hook to save in localStorage
+
+const useSemiPersitantStorage = (key, initialState) => {
+  const [value, setValue] = React.useState(
+    localStorage.getItem(key) || initialState
+  ); // lifting the stateup
+  React.useEffect(() => {
+    localStorage.setItem(key, value);
+  }, [value, key]);
+  return [value, setValue];
+};
